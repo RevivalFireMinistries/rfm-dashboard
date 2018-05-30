@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import {Observable} from "rxjs/internal/Observable";
+import {Observable} from 'rxjs/internal/Observable';
 
 @Injectable()
 export class TransactionService {
-  urlBase = 'http://41.185.27.50:1985/transaction/assembly/1/2018-05-24/2018-05-30';
+  urlBase = 'http://41.185.27.50:1985/transaction/assembly';
 
   constructor(private http: HttpClient) { }
 
@@ -13,8 +13,9 @@ export class TransactionService {
   txnList = [];
 
 
-  getTransactionListFromServer(): Observable<any> {
-    return this.http.get(this.urlBase);
+  getTransactionListFromServer(fromDate, toDate, id): Observable<any> {
+    const url = this.urlBase + '/' + id + '/' + fromDate + '/' + toDate;
+    return this.http.get(url);
   }
 
 }

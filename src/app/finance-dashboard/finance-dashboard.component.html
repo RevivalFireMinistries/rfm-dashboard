@@ -13,17 +13,11 @@
         </div>
 
         <div class="form-group filter-form-element">
-          <select  class="form-control" id="assemblies" name="assemblyList" [(ngModel)]="selectedAssembly" (change)="onChange($event)">
-            <option label="---Assembly---" value="object:3">---Please Select an Assembly---</option>
-            <option label="Strand" value="object:4">Strand</option>
-            <option label="Delft" value="object:5">Delft</option>
-            <option label="Harare" value="object:6">Harare</option>
-            <option label="Test" value="object:7">Test</option>
-            <option label="Pretoria" value="object:8">Pretoria</option>
-            <option label="Kraaifontein" value="object:9">Kraaifontein</option>
-            <option label="Eersterivier" value="object:10">Eersterivier</option>
-            <option label="Danoon" value="object:11">Danoon</option>
-            <option label="Nomzamo" value="object:12">Nomzamo</option>
+          <select (change)="onChangeAssembly($event.target.value)" [(ngModel)]="selectedAssembly" name="assemblyList">
+            <option value="0">--All--</option>
+            <option *ngFor="let ass of assemblyList" value={{ass.id}}>
+              {{ass.name}}
+            </option>
           </select>
         </div>
         <div class="form-group filter-form-element">

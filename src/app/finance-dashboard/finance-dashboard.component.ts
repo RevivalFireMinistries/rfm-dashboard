@@ -1,7 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import {TransactionService} from "../services/transaction.service";
+import {TransactionService} from '../services/transaction.service';
+import {Assembly} from '../domain/assembly';
+import {AssemblyService} from '../services/assembly.service';
 declare var moment: any;
 declare var $: any;
+declare var fromDate: string;
+declare var toDate: string;
 
 
 
@@ -14,16 +18,21 @@ export class FinanceDashboardComponent implements OnInit {
 
   private dataSet = [];
   private dataTable = undefined;
+  private selectedAssembly: Assembly;
+  private selectedAssemblyId: number;
+  private assemblyList: any;
 
-  constructor(private txnService: TransactionService) {
+  constructor(private txnService: TransactionService, private assemblyService:  AssemblyService) {
   }
 
   ngOnInit() {
       const start = moment().subtract(29, 'days');
       const end = moment();
 
-      function cb(start, end) {
-          $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+      function cb(startDate, endDate) {
+          $('#reportrange span').html(startDate.format('MMMM D, YYYY') + ' - ' + endDate.format('MMMM D, YYYY'));
+        fromDate = start.format('YYYY-MM-DD');
+        toDate = end.format('YYYY-MM-DD');
       }
 
       $('#reportrange').daterangepicker({
@@ -41,6 +50,8 @@ export class FinanceDashboardComponent implements OnInit {
 
       cb(start, end);
 
+    this.assemblyList =  this.assemblyService.getAssemblyList();
+
     this.dataTable = $('#txnDataTable').DataTable( {
       data: this.dataSet,
       columns: [
@@ -54,8 +65,14 @@ export class FinanceDashboardComponent implements OnInit {
     } );
 
   }
-  onChange(): void {
-    this.txnService.getTransactionListFromServer()
+
+  onChangeAssembly(assemblyId): void {
+    this.selectedAssemblyId = assemblyId;
+    this.searchApi();
+  }
+
+  searchApi(): void {
+    this.txnService.getTransactionListFromServer(fromDate, toDate, this.selectedAssemblyId)
       .subscribe((function(data) {
         const respArray = data.transactionList;
 

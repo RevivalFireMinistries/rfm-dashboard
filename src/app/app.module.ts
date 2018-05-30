@@ -9,6 +9,7 @@ import { AppComponent } from './app.component';
 import { FinanceDashboardComponent } from './finance-dashboard/finance-dashboard.component';
 import { DataDisplayComponent } from './data-display/data-display.component';
 import { TransactionService } from './services/transaction.service';
+import { AssemblyService } from './services/assembly.service';
 
 @NgModule({
     declarations: [
@@ -23,7 +24,7 @@ import { TransactionService } from './services/transaction.service';
         HttpClientModule,
         NgbModule.forRoot()
     ],
-    providers: [TransactionService],
+    providers: [TransactionService, AssemblyService],
     bootstrap: [AppComponent]
 })
 export class AppModule { }
