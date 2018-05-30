@@ -1,0 +1,50 @@
+<table class="table " style="width: 100%">
+  <tr>
+    <td align="center"><h4>Filters</h4></td>
+  </tr>
+  <tr>
+    <td>
+      <form class="form-inline" >
+        <div class="form-group filter-form-element">
+          <div id="reportrange" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+            <i class="fa fa-calendar"></i>&nbsp;
+            <span></span> <i class="fa fa-caret-down"></i>
+          </div>
+        </div>
+
+        <div class="form-group filter-form-element">
+          <select  class="form-control" id="assemblies" name="assemblyList" [(ngModel)]="selectedAssembly" (change)="onChange($event)">
+            <option label="---Assembly---" value="object:3">---Please Select an Assembly---</option>
+            <option label="Strand" value="object:4">Strand</option>
+            <option label="Delft" value="object:5">Delft</option>
+            <option label="Harare" value="object:6">Harare</option>
+            <option label="Test" value="object:7">Test</option>
+            <option label="Pretoria" value="object:8">Pretoria</option>
+            <option label="Kraaifontein" value="object:9">Kraaifontein</option>
+            <option label="Eersterivier" value="object:10">Eersterivier</option>
+            <option label="Danoon" value="object:11">Danoon</option>
+            <option label="Nomzamo" value="object:12">Nomzamo</option>
+          </select>
+        </div>
+        <div class="form-group filter-form-element">
+          <select  class="form-control" id="txnType" (ngModelChange)="onChange($event)">
+            <option label="---All Transactions---" value="object:3">All</option>
+            <option label="Income" value="object:4">Income</option>
+            <option label="Expenditure" value="object:5">Expenditure</option>
+          </select>
+        </div>
+
+      </form>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <table id="txnDataTable" class="display" style="width:100%">
+
+      </table>
+    </td>
+  </tr>
+
+</table>
+
+
