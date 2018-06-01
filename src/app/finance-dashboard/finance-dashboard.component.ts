@@ -4,8 +4,6 @@ import {Assembly} from '../domain/assembly';
 import {AssemblyService} from '../services/assembly.service';
 declare var moment: any;
 declare var $: any;
-declare var fromDate: string;
-declare var toDate: string;
 
 
 
@@ -21,19 +19,21 @@ export class FinanceDashboardComponent implements OnInit {
   private selectedAssembly: Assembly;
   private selectedAssemblyId: number;
   private assemblyList: any;
+  private fromDate: string;
+  private toDate: string;
+  private error: boolean;
+  private success: boolean;
+  private numResults: number;
 
   constructor(private txnService: TransactionService, private assemblyService:  AssemblyService) {
   }
 
   ngOnInit() {
+
+      this.error = false;
+      this.success = false;
       const start = moment().subtract(29, 'days');
       const end = moment();
-
-      function cb(startDate, endDate) {
-          $('#reportrange span').html(startDate.format('MMMM D, YYYY') + ' - ' + endDate.format('MMMM D, YYYY'));
-        fromDate = start.format('YYYY-MM-DD');
-        toDate = end.format('YYYY-MM-DD');
-      }
 
       $('#reportrange').daterangepicker({
           startDate: start,
@@ -45,10 +45,11 @@ export class FinanceDashboardComponent implements OnInit {
               'Last 30 Days': [moment().subtract(29, 'days'), moment()],
               'This Month': [moment().startOf('month'), moment().endOf('month')],
               'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-          }
-      }, cb);
+          },
+        autoApply: false,
+      }, this.onDateChange.bind(this));
 
-      cb(start, end);
+    this.onDateChange(start, end);
 
     this.assemblyList =  this.assemblyService.getAssemblyList();
 
@@ -66,24 +67,62 @@ export class FinanceDashboardComponent implements OnInit {
 
   }
 
-  onChangeAssembly(assemblyId): void {
-    this.selectedAssemblyId = assemblyId;
+  onDateChange(startDate, endDate): void {
+    $('#reportrange span').html(startDate.format('MMMM D, YYYY') + ' - ' + endDate.format('MMMM D, YYYY'));
+    this.fromDate = startDate.format('YYYY-MM-DD');
+    this.toDate = endDate.format('YYYY-MM-DD');
     this.searchApi();
   }
 
-  searchApi(): void {
-    this.txnService.getTransactionListFromServer(fromDate, toDate, this.selectedAssemblyId)
-      .subscribe((function(data) {
-        const respArray = data.transactionList;
-
-        for (let i = 0; i < respArray.length;  i++) {
-          const txnObj = [
-            respArray[i].created, respArray[i].type, respArray[i].amount, respArray[i].description, respArray[i].type, respArray[i].beneficiary
-          ];
-          this.dataSet.push(txnObj);
-          this.dataTable.clear().rows.add(this.dataSet).draw();
-        }
-      }).bind(this));
+  onChangeAssembly(assemblyId): void {
+    this.selectedAssemblyId = assemblyId;
+    this.searchApi();
+    this.selectedAssembly = this.assemblyService.getAssemblyById(assemblyId);
   }
+
+  searchApi(): void {
+    if ( typeof this.selectedAssemblyId !== 'undefined' ) {
+      this.dataSet.length = 0;
+      this.txnService.getTransactionListFromServer(this.fromDate, this.toDate, this.selectedAssemblyId)
+        .subscribe((function(data) {
+          const respArray = data.transactionList;
+
+          for (let i = 0; i < respArray.length;  i++) {
+            const txnObj = [
+              respArray[i].created, respArray[i].type, respArray[i].amount, respArray[i].description, respArray[i].type, respArray[i].beneficiary
+            ];
+            this.dataSet.push(txnObj);
+
+          }
+          this.dataTable.clear().rows.add(this.dataSet).draw();
+          this.numResults = this.dataSet.length;
+          this.success = true;
+        }).bind(this));
+    }
+
+  }
+
+  downloadCSV(): void {
+    if ( this.dataSet.length < 1) {
+      return;
+    }
+    const rows = this.dataSet;
+    let csvContent = 'data:text/csv;charset=utf-8,';
+    rows.forEach(function (rowArray) {
+      const row = rowArray.join(',');
+      csvContent += row + '\r\n';
+    });
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('type', 'hidden');
+    link.setAttribute('download', 'finance_report-' + this.selectedAssembly.name + '-' + this.fromDate + '-' + this.toDate );
+    link.innerHTML = '';
+    document.body.appendChild(link); // Required for FF
+
+    link.click();
+  }
+
+  getAssemblyList(): {}[]{ return this.assemblyList; }
 
 }

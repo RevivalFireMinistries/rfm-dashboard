@@ -1,33 +1,39 @@
+
+<h4 *ngIf="selectedAssembly != null">{{selectedAssembly.name}} Statistics from {{fromDate}} - {{toDate}}</h4>
+<h4 *ngIf="selectedAssembly == null">Finance Dashboard</h4>
 <table class="table " style="width: 100%">
-  <tr>
-    <td align="center"><h4>Filters</h4></td>
-  </tr>
+
   <tr>
     <td>
       <form class="form-inline" >
-        <div class="form-group filter-form-element">
-          <div id="reportrange" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
-            <i class="fa fa-calendar"></i>&nbsp;
-            <span></span> <i class="fa fa-caret-down"></i>
-          </div>
+        <div class="row">
+          <div class="col-xs-4"><div class="form-group filter-form-element">
+            <div id="reportrange" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+              <i class="fa fa-calendar"></i>&nbsp;
+              <span></span> <i class="fa fa-caret-down"></i>
+            </div>
+          </div></div>
+          <div class="col-xs-4"><div class="form-group filter-form-element">
+            <select (change)="onChangeAssembly($event.target.value)" [(ngModel)]="selectedAssembly" class="form-control" name="assemblySelect">
+            <option *ngFor="let ass of assemblyList" [value]="ass.id">
+                {{ass.name}}
+              </option>
+            </select>
+          </div></div>
+          <div class="col-xs-4"><div class="form-group filter-form-element">
+            <select  class="form-control" id="txnType" (ngModelChange)="onChange($event)">
+              <option label="---All Transactions---" value="object:3">All</option>
+              <option label="Income" value="object:4">Income</option>
+              <option label="Expenditure" value="object:5">Expenditure</option>
+            </select>
+          </div></div>
         </div>
-
-        <div class="form-group filter-form-element">
-          <select (change)="onChangeAssembly($event.target.value)" [(ngModel)]="selectedAssembly" name="assemblyList">
-            <option value="0">--All--</option>
-            <option *ngFor="let ass of assemblyList" value={{ass.id}}>
-              {{ass.name}}
-            </option>
-          </select>
+        <div class="row">
+           <div class="col-xs-12">
+             <div class="alert alert-danger" role="alert" *ngIf="error">Search encountered an error...Please try again</div>
+             <div class="alert alert-info" role="alert"  *ngIf="success">Search returned {{numResults}} results</div>
+           </div>
         </div>
-        <div class="form-group filter-form-element">
-          <select  class="form-control" id="txnType" (ngModelChange)="onChange($event)">
-            <option label="---All Transactions---" value="object:3">All</option>
-            <option label="Income" value="object:4">Income</option>
-            <option label="Expenditure" value="object:5">Expenditure</option>
-          </select>
-        </div>
-
       </form>
     </td>
   </tr>
@@ -36,6 +42,9 @@
       <table id="txnDataTable" class="display" style="width:100%">
 
       </table>
+      <div class="btn-group" role="group" *ngIf="numResults > 0">
+        <button type="button" class="btn btn-primary" (click)="downloadCSV()" >Download CSV</button>
+      </div>
     </td>
   </tr>
 
