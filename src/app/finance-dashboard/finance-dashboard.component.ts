@@ -14,16 +14,17 @@ declare var $: any;
 })
 export class FinanceDashboardComponent implements OnInit {
 
-  private dataSet = [];
-  private dataTable = undefined;
-  private selectedAssembly: Assembly;
-  private selectedAssemblyId: number;
-  private assemblyList: any;
-  private fromDate: string;
-  private toDate: string;
-  private error: boolean;
-  private success: boolean;
-  private numResults: number;
+  public dataSet = [];
+  public dataTable = undefined;
+  public selectedAssembly: Assembly;
+  public selectedAssemblyId: number;
+  public assemblyList: Assembly[];
+  public fromDate: string;
+  public toDate: string;
+  public error: boolean;
+  public success: boolean;
+  public numResults: number;
+  public txnType: string;
 
   constructor(private txnService: TransactionService, private assemblyService:  AssemblyService) {
   }
@@ -53,6 +54,8 @@ export class FinanceDashboardComponent implements OnInit {
 
     this.assemblyList =  this.assemblyService.getAssemblyList();
 
+    this.selectedAssembly = this.assemblyList[0];
+
     this.dataTable = $('#txnDataTable').DataTable( {
       data: this.dataSet,
       columns: [
@@ -74,16 +77,19 @@ export class FinanceDashboardComponent implements OnInit {
     this.searchApi();
   }
 
-  onChangeAssembly(assemblyId): void {
-    this.selectedAssemblyId = assemblyId;
+  onChangeAssembly(): void {
     this.searchApi();
-    this.selectedAssembly = this.assemblyService.getAssemblyById(assemblyId);
+  }
+
+  onChangeTxnType(txnType): void {
+    this.txnType = txnType;
+    this.searchApi();
   }
 
   searchApi(): void {
-    if ( typeof this.selectedAssemblyId !== 'undefined' ) {
-      this.dataSet.length = 0;
-      this.txnService.getTransactionListFromServer(this.fromDate, this.toDate, this.selectedAssemblyId)
+    this.dataSet.length = 0;
+    if ( typeof this.selectedAssembly !== 'undefined' ) {
+      this.txnService.getTransactionListFromServer(this.fromDate, this.toDate, this.selectedAssembly.id, this.txnType)
         .subscribe((function(data) {
           const respArray = data.transactionList;
 

@@ -1,5 +1,5 @@
 
-<h4 *ngIf="selectedAssembly != null">{{selectedAssembly.name}} Statistics from {{fromDate}} - {{toDate}}</h4>
+<h4 *ngIf="selectedAssembly != null && selectedAssembly.id != 0">{{selectedAssembly.name}} Statistics from {{fromDate}} - {{toDate}}</h4>
 <h4 *ngIf="selectedAssembly == null">Finance Dashboard</h4>
 <table class="table " style="width: 100%">
 
@@ -14,20 +14,20 @@
             </div>
           </div></div>
           <div class="col-xs-4"><div class="form-group filter-form-element">
-            <select (change)="onChangeAssembly($event.target.value)" [(ngModel)]="selectedAssembly" class="form-control" name="assemblySelect">
-            <option *ngFor="let ass of assemblyList" [value]="ass.id">
-                {{ass.name}}
+            <select [(ngModel)]="selectedAssembly" #ass (change)="onChangeAssembly()"  class="form-control" name="selectedAssembly">
+            <option *ngFor="let assembly of assemblyList" [ngValue]="assembly">
+                {{assembly.name}}
               </option>
             </select>
           </div></div>
           <div class="col-xs-4"><div class="form-group filter-form-element">
-            <select  class="form-control" id="txnType" (ngModelChange)="onChange($event)">
-              <option label="---All Transactions---" value="object:3">All</option>
-              <option label="Income" value="object:4">Income</option>
-              <option label="Expenditure" value="object:5">Expenditure</option>
+            <select  class="form-control" id="txnType" [(ngModel)]="txnType" name="txnType" (change)="onChangeTxnType($event.target.value)">
+              <option label="---All Transactions---" value="">All</option>
+              <option label="Income" value="Income">Income</option>
+              <option label="Expense" value="Expense">Expenditure</option>
             </select>
           </div></div>
-        </div>
+        </div>&nbsp;
         <div class="row">
            <div class="col-xs-12">
              <div class="alert alert-danger" role="alert" *ngIf="error">Search encountered an error...Please try again</div>

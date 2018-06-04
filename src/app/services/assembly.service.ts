@@ -28,10 +28,9 @@ export class AssemblyService {
     return assemblyList;
   }
 
-  getAssemblyById(assemblyId: string): Assembly {
-    const id = Number(assemblyId);
+  getAssemblyById(assemblyId: number): Assembly {
     for ( let i = 0; i < this.getAssemblyList().length; i++) {
-      if ( this.getAssemblyList()[i].id === id) {
+      if ( this.getAssemblyList()[i].id === assemblyId) {
         return this.getAssemblyList()[i];
       }
     }

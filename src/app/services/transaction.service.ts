@@ -13,8 +13,11 @@ export class TransactionService {
   txnList = [];
 
 
-  getTransactionListFromServer(fromDate, toDate, id): Observable<any> {
-    const url = this.urlBase + '/' + id + '/' + fromDate + '/' + toDate;
+  getTransactionListFromServer(fromDate, toDate, id, type): Observable<any> {
+    let url = this.urlBase + '/' + id + '/' + fromDate + '/' + toDate;
+    if (type !== undefined && type !== '') {
+       url = url + '/' + type;
+    }
     return this.http.get(url);
   }
 
